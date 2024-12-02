@@ -1,0 +1,156 @@
+@admin_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NzQ5NzBmNTJlZjc2OGJmNDBhYWVlYWMiLCJpYXQiOjE3MzMwMzcxMzEsImV4cCI6MTczMzAzODkzMX0._qr9l_83l3Mq9QGz0Apwu_Fp3xMidh1_A-kWWOHvsfw
+
+@user_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NzQ5NzBmNTJlZjc2OGJmNDBhYWVlYWMiLCJpYXQiOjE3MzMwNjg0MzQsImV4cCI6MTczMzA3MDIzNH0.O-LIgerbufdlFcGzvlLmS6gWyhh-c-EuMmasq7yjZJQ
+
+@errand_id=674976f2129b5fc2eb00bfa6
+@errand_idtwo=67497a97443f9f0990026b06
+###
+POST http://localhost:3000/api/users/register-user
+Content-Type: application/json
+
+{
+    "firstName": "Bev",
+    "lastName": "Limo",
+    "email": "bevlimo@gmail.com",
+    "password":"genbev@1234"
+}
+
+###
+POST http://localhost:3000/api/users/login-user
+Content-Type: application/json
+
+{
+    "email": "kellylimo@gmail.com",
+    "password":"genkelly@1234"
+}
+
+###
+POST http://localhost:3000/api/users/login-user
+Content-Type: application/json
+
+{
+    "email": "bevlimo@gmail.com",
+    "password":"genbev@1234"
+}
+
+###
+DELETE http://localhost:3000/api/errands/delete/errand/{{errand_id}}
+
+### Login to get token
+POST http://localhost:3000/api/users/login-user
+Content-Type: application/json
+
+{
+    "email": "your@email.com",
+    "password": "yourpassword"
+}
+###
+GET http://localhost:3000/api/dashboard
+Authorization:Bearer {{user_token}}
+### Get all errands (with authentication)
+GET http://localhost:3000/api/errands/all
+Authorization:Bearer {{user_token}}
+### Create new errand (with auth)
+POST http://localhost:3000/api/errands/create
+Content-Type: application/json
+Authorization:Bearer {{user_token}}
+
+{
+  "errandName": "Medical Prescription Pickup",
+  "errandImage": "https://example.com/images/pet-grooming.png",
+  "description": "Collect prescribed medications from the pharmacy and deliver to patient.",
+  "county": "Mombasa",
+  "subCounty": "Nyali",
+  "reward": 2500,
+  "place": "Goodlife Pharmacy, City Mall",
+  "dateTime": "2024-12-02T14:00:00",
+  "completionTime": "2024-12-02T16:00:00",
+  "urgency": "High",
+  "instructions": "Present prescription at counter. Verify all medications are included. Keep medications at appropriate temperature.",
+  "status": "Pending"
+}
+
+###
+POST http://localhost:3000/api/errands/claim/errand/{{errand_id}}
+Authorization:Bearer {{user_token}}
+
+### Claim an errand (with auth)
+PUT http://localhost:3000/api/errands/update/errand/{{errand_idtwo}}
+Content-Type: application/json
+Authorization:Bearer {{admin_token}}
+
+{
+  "status": "Pending"
+}
+###
+GET http://localhost:3000/api/errands/user
+Authorization: Bearer {{user_token}}
+
+### Update errand status
+PUT http://localhost:3000/api/errands/update/errand/
+Content-Type: application/json
+Authorization: Bearer {{user_token}}
+
+{
+  "status": "In Progress"
+}
+
+### Test different status updates
+### Set to Completed
+PUT http://localhost:3000/api/errands/update/errand/{{errand_idtwo}}
+Content-Type: application/json
+Authorization: Bearer {{admin_token}}
+
+{
+  "status": "Completed"
+}
+
+### Set to Cancelled
+PUT http://localhost:3000/api/errands/update/errand/{{errand_id}}
+Content-Type: application/json
+Authorization: Bearer {{admin_token}}
+
+{
+  "status": "Cancelled"
+}
+
+### Set to Pending
+PUT http://localhost:3000/api/errands/update/errand/{{errand_id}}
+Content-Type: application/json
+Authorization: Bearer {{admin_token}}
+
+{
+  "status": "Claimed"
+}
+
+### Test invalid status (should fail)
+PUT http://localhost:3000/api/errands/update/errand/{{errand_id}}
+Content-Type: application/json
+Authorization: Bearer {{admin_token}}
+
+{
+  "status": "InvalidStatus"
+}
+
+### Get user's claimed errands
+GET http://localhost:3000/api/errands/claimed
+Authorization: Bearer {{user_token}}
+
+### Get Dashboard Data
+GET http://localhost:3000/api/dashboard
+Authorization: Bearer {{user_token}}
+
+### Approve an errand claim
+POST http://localhost:3000/api/errands/approve/errand/{{errand_id}}
+Authorization: Bearer {{admin_token}}
+
+### Get user's approved errands
+GET http://localhost:3000/api/errands/approved
+Authorization: Bearer {{user_token}}
+
+# claim -> pending -> approve -> complete
+# claim -> pending -> cancel
+
+### Get errands approved by owner
+GET http://localhost:3000/api/errands/approved-by-owner
+Authorization: Bearer {{user_token}}
